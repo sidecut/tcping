@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"net"
 	"net/netip"
 	"os"
@@ -75,7 +76,7 @@ const (
 )
 
 var (
-	waitTime = 1 * time.Second
+	waitTime time.Duration
 )
 
 /* Print how program should be run */
@@ -114,7 +115,7 @@ func processUserInput(tcpStats *stats) {
 	shouldCheckUpdates := flag.Bool("u", false, "check for updates.")
 	outputJson := flag.Bool("j", false, "output in JSON format.")
 	showVersion := flag.Bool("v", false, "show version.")
-	waitTime = time.Duration(*flag.Uint("w", 1, "wait time between probes in seconds. e.g. -w 2 for 2 seconds.")) * time.Second
+	w := flag.Uint("w", 1, "wait time between probes in seconds. e.g. -w 2 for 2 seconds.")
 
 	flag.CommandLine.Usage = usage
 
@@ -138,6 +139,9 @@ func processUserInput(tcpStats *stats) {
 		colorGreen("TCPING version %s\n", version)
 		os.Exit(0)
 	}
+
+	waitTime = time.Duration(*w) * time.Second
+	log.Printf("waitTime: %v", waitTime)
 
 	/* host and port must be specified　*/
 	if len(args) != 2 {
@@ -191,8 +195,8 @@ func permuteArgs(args cliArgs) {
 		v := args[i]
 		if v[0] == '-' {
 			optionName := v[1:]
-			switch optionName {
-			case "r":
+			switch {
+			case optionName == "r" || optionName == "w":
 				/* out of index */
 				if len(args) <= i+1 {
 					usage()
@@ -217,6 +221,9 @@ func permuteArgs(args cliArgs) {
 	for i := 0; i < len(args); i++ {
 		args[i] = permutedArgs[i]
 	}
+
+	log.Println("permutedArgs: ", permutedArgs)
+	log.Println("args: ", args)
 }
 
 /* Check for updates and print messages if there is a newer version */
