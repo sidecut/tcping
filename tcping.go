@@ -5,7 +5,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"net/netip"
 	"os"
@@ -141,7 +140,6 @@ func processUserInput(tcpStats *stats) {
 	}
 
 	waitTime = time.Duration(*w) * time.Second
-	log.Printf("waitTime: %v", waitTime)
 
 	/* host and port must be specified　*/
 	if len(args) != 2 {
@@ -221,9 +219,6 @@ func permuteArgs(args cliArgs) {
 	for i := 0; i < len(args); i++ {
 		args[i] = permutedArgs[i]
 	}
-
-	log.Println("permutedArgs: ", permutedArgs)
-	log.Println("args: ", args)
 }
 
 /* Check for updates and print messages if there is a newer version */
