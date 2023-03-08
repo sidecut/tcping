@@ -66,14 +66,16 @@ type cliArgs = []string
 type calculatedTimeString = string
 
 const (
-	version             = "1.19.0"
-	owner               = "pouriyajamshidi"
-	repo                = "tcping"
-	thousandMilliSecond = 1000 * time.Millisecond
-	oneSecond           = 1 * time.Second
-	timeFormat          = "2006-01-02 15:04:05"
-	nullTimeFormat      = "0001-01-01 00:00:00"
-	hourFormat          = "15:04:05"
+	version        = "1.19.0"
+	owner          = "pouriyajamshidi"
+	repo           = "tcping"
+	timeFormat     = "2006-01-02 15:04:05"
+	nullTimeFormat = "0001-01-01 00:00:00"
+	hourFormat     = "15:04:05"
+)
+
+var (
+	waitTime = 1 * time.Second
 )
 
 /* Print how program should be run */
@@ -112,6 +114,7 @@ func processUserInput(tcpStats *stats) {
 	shouldCheckUpdates := flag.Bool("u", false, "check for updates.")
 	outputJson := flag.Bool("j", false, "output in JSON format.")
 	showVersion := flag.Bool("v", false, "show version.")
+	waitTime = time.Duration(*flag.Uint("w", 1, "wait time between probes in seconds. e.g. -w 2 for 2 seconds.")) * time.Second
 
 	flag.CommandLine.Usage = usage
 
@@ -444,7 +447,7 @@ func tcping(tcpStats *stats) {
 	IPAndPort := netip.AddrPortFrom(tcpStats.ip, tcpStats.port)
 
 	connStart := getSystemTime()
-	conn, err := net.DialTimeout("tcp", IPAndPort.String(), oneSecond)
+	conn, err := net.DialTimeout("tcp", IPAndPort.String(), waitTime)
 	connEnd := time.Since(connStart)
 
 	rtt := nanoToMillisecond(connEnd.Nanoseconds())
@@ -457,7 +460,7 @@ func tcping(tcpStats *stats) {
 		conn.Close()
 	}
 
-	time.Sleep(thousandMilliSecond - connEnd)
+	time.Sleep(waitTime - connEnd)
 }
 
 /* Capture keystrokes from stdin */
