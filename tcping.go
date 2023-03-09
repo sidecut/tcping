@@ -114,7 +114,7 @@ func processUserInput(tcpStats *stats) {
 	shouldCheckUpdates := flag.Bool("u", false, "check for updates.")
 	outputJson := flag.Bool("j", false, "output in JSON format.")
 	showVersion := flag.Bool("v", false, "show version.")
-	w := flag.Uint("w", 1, "wait time between probes in seconds. e.g. -w 2 for 2 seconds.")
+	waitSecs := flag.Uint("i", 1, "wait time between probes in seconds. e.g. -i 2 for 2 seconds.")
 
 	flag.CommandLine.Usage = usage
 
@@ -139,7 +139,7 @@ func processUserInput(tcpStats *stats) {
 		os.Exit(0)
 	}
 
-	waitTime = time.Duration(*w) * time.Second
+	waitTime = time.Duration(*waitSecs) * time.Second
 
 	/* host and port must be specified　*/
 	if len(args) != 2 {
@@ -194,7 +194,7 @@ func permuteArgs(args cliArgs) {
 		if v[0] == '-' {
 			optionName := v[1:]
 			switch {
-			case optionName == "r" || optionName == "w":
+			case optionName == "r" || optionName == "i":
 				/* out of index */
 				if len(args) <= i+1 {
 					usage()
