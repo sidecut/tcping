@@ -66,14 +66,16 @@ type cliArgs = []string
 type calculatedTimeString = string
 
 const (
-	version             = "1.19.0"
-	owner               = "pouriyajamshidi"
-	repo                = "tcping"
-	thousandMilliSecond = 1000 * time.Millisecond
-	oneSecond           = 1 * time.Second
-	timeFormat          = "2006-01-02 15:04:05"
-	nullTimeFormat      = "0001-01-01 00:00:00"
-	hourFormat          = "15:04:05"
+	version        = "1.19.0"
+	owner          = "pouriyajamshidi"
+	repo           = "tcping"
+	timeFormat     = "2006-01-02 15:04:05"
+	nullTimeFormat = "0001-01-01 00:00:00"
+	hourFormat     = "15:04:05"
+)
+
+var (
+	waitTime time.Duration
 )
 
 /* Print how program should be run */
@@ -112,6 +114,7 @@ func processUserInput(tcpStats *stats) {
 	shouldCheckUpdates := flag.Bool("u", false, "check for updates.")
 	outputJson := flag.Bool("j", false, "output in JSON format.")
 	showVersion := flag.Bool("v", false, "show version.")
+	waitSecs := flag.Uint("i", 1, "wait time between probes in seconds. e.g. -i 2 for 2 seconds.")
 
 	flag.CommandLine.Usage = usage
 
@@ -135,6 +138,8 @@ func processUserInput(tcpStats *stats) {
 		colorGreen("TCPING version %s\n", version)
 		os.Exit(0)
 	}
+
+	waitTime = time.Duration(*waitSecs) * time.Second
 
 	/* host and port must be specified　*/
 	if len(args) != 2 {
@@ -188,8 +193,8 @@ func permuteArgs(args cliArgs) {
 		v := args[i]
 		if v[0] == '-' {
 			optionName := v[1:]
-			switch optionName {
-			case "r":
+			switch {
+			case optionName == "r" || optionName == "i":
 				/* out of index */
 				if len(args) <= i+1 {
 					usage()
@@ -444,7 +449,7 @@ func tcping(tcpStats *stats) {
 	IPAndPort := netip.AddrPortFrom(tcpStats.ip, tcpStats.port)
 
 	connStart := getSystemTime()
-	conn, err := net.DialTimeout("tcp", IPAndPort.String(), oneSecond)
+	conn, err := net.DialTimeout("tcp", IPAndPort.String(), waitTime)
 	connEnd := time.Since(connStart)
 
 	rtt := nanoToMillisecond(connEnd.Nanoseconds())
@@ -457,7 +462,7 @@ func tcping(tcpStats *stats) {
 		conn.Close()
 	}
 
-	time.Sleep(thousandMilliSecond - connEnd)
+	time.Sleep(waitTime - connEnd)
 }
 
 /* Capture keystrokes from stdin */
