@@ -5,7 +5,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"net/netip"
 	"os"
@@ -124,8 +123,6 @@ func processUserInput(tcpStats *stats) {
 
 	permuteArgs(os.Args[1:])
 	flag.Parse()
-
-	log.Printf("args: %+v", flag.Lookup("t"))
 
 	/* validation for flag and args */
 	args := flag.Args()
