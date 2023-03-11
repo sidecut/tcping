@@ -59,9 +59,10 @@ type rttResults struct {
 type replyMsg struct {
 	msg       string
 	rtt       float32
-	wallClock time.Time
+	wallClock wallClock
 }
 
+type wallClock time.Time
 type ipAddress = netip.Addr
 type cliArgs = []string
 type calculatedTimeString = string
@@ -422,7 +423,7 @@ func (tcpStats *stats) handleConnError(now time.Time) {
 	tcpStats.lastUnsuccessfulProbe = now
 	tcpStats.ongoingUnsuccessfulPkts += 1
 
-	tcpStats.statsPrinter.printReply(replyMsg{msg: "No reply", rtt: 0, wallClock: now})
+	tcpStats.statsPrinter.printReply(replyMsg{msg: "No reply", rtt: 0, wallClock: wallClock(now)})
 }
 
 func (tcpStats *stats) handleConnSuccess(rtt float32, now time.Time) {
@@ -444,7 +445,7 @@ func (tcpStats *stats) handleConnSuccess(rtt float32, now time.Time) {
 	tcpStats.lastSuccessfulProbe = now
 	tcpStats.rtt = append(tcpStats.rtt, rtt)
 
-	tcpStats.statsPrinter.printReply(replyMsg{msg: "Reply", rtt: rtt, wallClock: now})
+	tcpStats.statsPrinter.printReply(replyMsg{msg: "Reply", rtt: rtt, wallClock: wallClock(now)})
 }
 
 /* Ping host, TCP style */
