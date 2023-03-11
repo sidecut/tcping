@@ -176,19 +176,39 @@ func (p *statsPlanePrinter) printStatistics() {
 func (p *statsPlanePrinter) printReply(replyMsg replyMsg) {
 	if p.isIP {
 		if replyMsg.msg == noReply {
-			colorRed("%s from %s on port %d TCP_conn=%d\n",
-				replyMsg.msg, p.ip, p.port, p.totalUnsuccessfulPkts)
+			if *outputTime {
+				colorRed("%s %s from %s on port %d TCP_conn=%d\n",
+					replyMsg.wallClock, replyMsg.msg, p.ip, p.port, p.totalUnsuccessfulPkts)
+			} else {
+				colorRed("%s from %s on port %d TCP_conn=%d\n",
+					replyMsg.msg, p.ip, p.port, p.totalUnsuccessfulPkts)
+			}
 		} else {
-			colorLightGreen("%s from %s on port %d TCP_conn=%d time=%.3f ms\n",
-				replyMsg.msg, p.ip, p.port, p.totalSuccessfulPkts, replyMsg.rtt)
+			if *outputTime {
+				colorLightGreen("%s %s from %s on port %d TCP_conn=%d time=%.3f ms\n",
+					replyMsg.wallClock, replyMsg.msg, p.ip, p.port, p.totalSuccessfulPkts, replyMsg.rtt)
+			} else {
+				colorLightGreen("%s from %s on port %d TCP_conn=%d time=%.3f ms\n",
+					replyMsg.msg, p.ip, p.port, p.totalSuccessfulPkts, replyMsg.rtt)
+			}
 		}
 	} else {
 		if replyMsg.msg == noReply {
-			colorRed("%s from %s (%s) on port %d TCP_conn=%d\n",
-				replyMsg.msg, p.hostname, p.ip, p.port, p.totalUnsuccessfulPkts)
+			if *outputTime {
+				colorRed("%s %s from %s (%s) on port %d TCP_conn=%d\n",
+					replyMsg.wallClock, replyMsg.msg, p.hostname, p.ip, p.port, p.totalUnsuccessfulPkts)
+			} else {
+				colorRed("%s from %s (%s) on port %d TCP_conn=%d\n",
+					replyMsg.msg, p.hostname, p.ip, p.port, p.totalUnsuccessfulPkts)
+			}
 		} else {
-			colorLightGreen("%s from %s (%s) on port %d TCP_conn=%d time=%.3f ms\n",
-				replyMsg.msg, p.hostname, p.ip, p.port, p.totalSuccessfulPkts, replyMsg.rtt)
+			if *outputTime {
+				colorLightGreen("%s %s from %s (%s) on port %d TCP_conn=%d time=%.3f ms\n",
+					replyMsg.wallClock, replyMsg.msg, p.hostname, p.ip, p.port, p.totalSuccessfulPkts, replyMsg.rtt)
+			} else {
+				colorLightGreen("%s from %s (%s) on port %d TCP_conn=%d time=%.3f ms\n",
+					replyMsg.msg, p.hostname, p.ip, p.port, p.totalSuccessfulPkts, replyMsg.rtt)
+			}
 		}
 	}
 }
@@ -369,19 +389,39 @@ func (j *statsJsonPrinter) printStatistics() {
 func (j *statsJsonPrinter) printReply(replyMsg replyMsg) {
 	if j.isIP {
 		if replyMsg.msg == noReply {
-			jsonPrintf("%s from %s on port %d TCP_conn=%d",
-				replyMsg.msg, j.ip, j.port, j.totalUnsuccessfulPkts)
+			if *outputTime {
+				jsonPrintf("%s %s from %s on port %d TCP_conn=%d",
+					replyMsg.wallClock, replyMsg.msg, j.ip, j.port, j.totalUnsuccessfulPkts)
+			} else {
+				jsonPrintf("%s from %s on port %d TCP_conn=%d",
+					replyMsg.msg, j.ip, j.port, j.totalUnsuccessfulPkts)
+			}
 		} else {
-			jsonPrintf("%s from %s on port %d TCP_conn=%d time=%.3f ms",
-				replyMsg.msg, j.ip, j.port, j.totalSuccessfulPkts, replyMsg.rtt)
+			if *outputTime {
+				jsonPrintf("%s %s from %s on port %d TCP_conn=%d time=%.3f ms",
+					replyMsg.wallClock, replyMsg.msg, j.ip, j.port, j.totalSuccessfulPkts, replyMsg.rtt)
+			} else {
+				jsonPrintf("%s from %s on port %d TCP_conn=%d time=%.3f ms",
+					replyMsg.msg, j.ip, j.port, j.totalSuccessfulPkts, replyMsg.rtt)
+			}
 		}
 	} else {
 		if replyMsg.msg == noReply {
-			jsonPrintf("%s from %s (%s) on port %d TCP_conn=%d",
-				replyMsg.msg, j.hostname, j.ip, j.port, j.totalUnsuccessfulPkts)
+			if *outputTime {
+				jsonPrintf("%s %s from %s (%s) on port %d TCP_conn=%d",
+					replyMsg.wallClock, replyMsg.msg, j.hostname, j.ip, j.port, j.totalUnsuccessfulPkts)
+			} else {
+				jsonPrintf("%s from %s (%s) on port %d TCP_conn=%d",
+					replyMsg.msg, j.hostname, j.ip, j.port, j.totalUnsuccessfulPkts)
+			}
 		} else {
-			jsonPrintf("%s from %s (%s) on port %d TCP_conn=%d time=%.3f ms",
-				replyMsg.msg, j.hostname, j.ip, j.port, j.totalSuccessfulPkts, replyMsg.rtt)
+			if *outputTime {
+				jsonPrintf("%s %s from %s (%s) on port %d TCP_conn=%d time=%.3f ms",
+					replyMsg.wallClock, replyMsg.msg, j.hostname, j.ip, j.port, j.totalSuccessfulPkts, replyMsg.rtt)
+			} else {
+				jsonPrintf("%s from %s (%s) on port %d TCP_conn=%d time=%.3f ms",
+					replyMsg.msg, j.hostname, j.ip, j.port, j.totalSuccessfulPkts, replyMsg.rtt)
+			}
 		}
 	}
 }

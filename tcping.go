@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"net"
 	"net/netip"
 	"os"
@@ -57,8 +58,9 @@ type rttResults struct {
 }
 
 type replyMsg struct {
-	msg string
-	rtt float32
+	msg       string
+	rtt       float32
+	wallClock time.Time
 }
 
 type ipAddress = netip.Addr
@@ -75,7 +77,8 @@ const (
 )
 
 var (
-	waitTime time.Duration
+	waitTime   time.Duration
+	outputTime *bool
 )
 
 /* Print how program should be run */
@@ -115,11 +118,14 @@ func processUserInput(tcpStats *stats) {
 	outputJson := flag.Bool("j", false, "output in JSON format.")
 	showVersion := flag.Bool("v", false, "show version.")
 	waitSecs := flag.Uint("i", 1, "wait time between probes in seconds. e.g. -i 2 for 2 seconds.")
+	outputTime = flag.Bool("t", false, "output wall clock time of each packet.")
 
 	flag.CommandLine.Usage = usage
 
 	permuteArgs(os.Args[1:])
 	flag.Parse()
+
+	log.Printf("args: %+v", flag.Lookup("t"))
 
 	/* validation for flag and args */
 	args := flag.Args()
@@ -419,7 +425,7 @@ func (tcpStats *stats) handleConnError(now time.Time) {
 	tcpStats.lastUnsuccessfulProbe = now
 	tcpStats.ongoingUnsuccessfulPkts += 1
 
-	tcpStats.statsPrinter.printReply(replyMsg{msg: "No reply", rtt: 0})
+	tcpStats.statsPrinter.printReply(replyMsg{msg: "No reply", rtt: 0, wallClock: now})
 }
 
 func (tcpStats *stats) handleConnSuccess(rtt float32, now time.Time) {
@@ -441,7 +447,7 @@ func (tcpStats *stats) handleConnSuccess(rtt float32, now time.Time) {
 	tcpStats.lastSuccessfulProbe = now
 	tcpStats.rtt = append(tcpStats.rtt, rtt)
 
-	tcpStats.statsPrinter.printReply(replyMsg{msg: "Reply", rtt: rtt})
+	tcpStats.statsPrinter.printReply(replyMsg{msg: "Reply", rtt: rtt, wallClock: now})
 }
 
 /* Ping host, TCP style */
