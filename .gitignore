@@ -1,3 +1,6 @@
 *.sh
 executables/
 .idea/
+
+# My local stuff
+tcping
